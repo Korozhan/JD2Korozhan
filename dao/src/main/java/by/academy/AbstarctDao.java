@@ -14,9 +14,7 @@ public abstract class AbstarctDao<T extends Identified<PK>, PK extends Integer> 
 	private Connection connection;
 	
 	public abstract String getCreateQuery();//INSERT INTO [Table] ([column, column, ...]) VALUES (?, ?, ...);
-
-	public abstract String getSelectQuery();
-
+	public abstract String getSelectQuery();//SELECT [column, column, ...] FROM [Table];
 	public abstract String getUpdateQuery();//UPDATE [Table] SET [column = ?, column = ?, ...] WHERE id = ?;
 	public abstract String getDeleteQuery();//DELETE FROM [Table] WHERE id= ?;
 
