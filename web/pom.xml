@@ -23,5 +23,26 @@
   </dependencies>
   <build>
     <finalName>web</finalName>
+    <plugins>
+      <plugin>
+        <grouoId>org.apache.tomcat.maven</grouoId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <configuration>
+          <url>http://localhost:8080/manager/text</url>
+          <username>managerGui</username>
+          <password>abc123</password>
+          <path>/web</path>
+          <warFile>target/web.war</warFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>redeploy</goal>
+            </goals>
+            <phase>install</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>
