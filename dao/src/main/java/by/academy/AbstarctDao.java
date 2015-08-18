@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstarctDao<T extends Identified<PK>, PK extends Integer> implements GenericDao<T, PK>{
 	
-	final static Logger LOG = Logger.getLogger(AbstarctDao.class.getName());
+	private final Logger LOG = Logger.getLogger(getClass().getSimpleName());
 
 	private Connection connection;
 	

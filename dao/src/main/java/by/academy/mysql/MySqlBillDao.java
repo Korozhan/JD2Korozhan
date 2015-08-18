@@ -13,11 +13,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import by.academy.AbstarctDao;
+import by.academy.DaoException;
 import by.academy.entities.Bill;
 
 public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 
-	final static Logger LOG = Logger.getLogger(MySqlBillDao.class.getName());
+	private final Logger LOG = Logger.getLogger(getClass().getSimpleName());
 
 	public MySqlBillDao(Connection connection) {
 		super(connection);
@@ -58,7 +59,7 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 	}
 
 	@Override
-	protected List<Bill> parseResultSet(ResultSet rs) throws Exception {
+	protected List<Bill> parseResultSet(ResultSet rs) throws DaoException {
 		LinkedList<Bill> result = new LinkedList<Bill>();
         try {
             while (rs.next()) {
@@ -76,7 +77,7 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 
 	@Override
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Bill object) throws Exception {
+			Bill object) throws DaoException {
 		try {
             Date sqlDate = convert(object.getDate());
             statement.setInt(1, object.getPrice());
@@ -96,7 +97,7 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 
 	@Override
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			Bill object) throws Exception {
+			Bill object) throws DaoException {
 		try {
             Date sqlDate = convert(object.getDate());
             statement.setInt(1, object.getPrice());
