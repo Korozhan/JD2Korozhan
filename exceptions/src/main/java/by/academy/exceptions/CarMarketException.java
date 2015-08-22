@@ -1,4 +1,4 @@
-package by.academy.exception;
+package by.academy.exceptions;
 
 public class CarMarketException extends Exception{
 	

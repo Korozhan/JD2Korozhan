@@ -1,4 +1,4 @@
-package by.academy;
+package by.academy.config;
 
 import java.io.Serializable;
 

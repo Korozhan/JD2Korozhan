@@ -3,12 +3,9 @@
  */
 package by.academy.entities;
 
-import by.academy.Identified;
+import by.academy.config.Identified;
 
-/**
- * @author Veronika
- *
- */
+
 public class Lot implements Identified<Integer>{
 	
 	private Integer id_user;

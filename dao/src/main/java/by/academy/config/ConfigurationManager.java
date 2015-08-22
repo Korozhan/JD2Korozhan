@@ -1,14 +1,10 @@
 /**
  * 
  */
-package by.academy;
+package by.academy.config;
 
 import java.util.ResourceBundle;
 
-/**
- * @author Veronika
- *
- */
 public enum ConfigurationManager {
 	INSTANCE;
 	
@@ -33,11 +29,6 @@ public enum ConfigurationManager {
 		this.resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 	}
 	
-	/**
-	 * Retrieves value from properties file according to the input key  
-	 * @param key defines value in the properties file  
-	 * @return value from the properties file
-	 */
 	public String getProperty(String key) {
 		return this.resourceBundle.getString(key);
 	}

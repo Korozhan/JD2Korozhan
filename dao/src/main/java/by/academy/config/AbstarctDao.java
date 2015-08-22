@@ -1,16 +1,14 @@
-package by.academy;
+package by.academy.config;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import by.academy.exceptions.DaoException;
 
 public abstract class AbstarctDao<T extends Identified<PK>, PK extends Integer> implements GenericDao<T, PK>{
 	
-	private final Logger LOG = Logger.getLogger(getClass().getSimpleName());
-
 	private Connection connection;
 	
 	public abstract String getCreateQuery();//INSERT INTO [Table] ([column, column, ...]) VALUES (?, ?, ...);
@@ -18,74 +16,70 @@ public abstract class AbstarctDao<T extends Identified<PK>, PK extends Integer> 
 	public abstract String getUpdateQuery();//UPDATE [Table] SET [column = ?, column = ?, ...] WHERE id = ?;
 	public abstract String getDeleteQuery();//DELETE FROM [Table] WHERE id= ?;
 
-	protected abstract List<T> parseResultSet(ResultSet rs) throws Exception;
-	protected abstract void prepareStatementForUpdate(PreparedStatement statement, T object) throws Exception;
-    protected abstract void prepareStatementForInsert(PreparedStatement statement, T object) throws Exception;
+	protected abstract List<T> parseResultSet(ResultSet rs) throws DaoException;
+	protected abstract void prepareStatementForUpdate(PreparedStatement statement, T object) throws DaoException;
+    protected abstract void prepareStatementForInsert(PreparedStatement statement, T object) throws DaoException;
 
 	
 	@Override
-    public T add(T object) {
+    public T add(T object) throws DaoException{
 		T persistInstance = null;
         String sql = getCreateQuery();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             prepareStatementForInsert(statement, object);
             int count = statement.executeUpdate();
             if (count != 1) {
-            	try {
-                    throw new Exception("On add modify more then 1 record: " + count);
-                } catch (Exception ex) {
-                	LOG.log(Level.SEVERE, null, ex);
-                }
-            }
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+            	throw new DaoException("On add modify more then 1 record: " + count);
+            	}
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         sql = getSelectQuery() + " WHERE id = last_insert_id();";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
             List<T> list = parseResultSet(rs);
             if ((list == null) || (list.size() != 1))
-            	LOG.info("Exception on findByPK new persist data.");
+            	throw new DaoException("Exception on findByPK new persist data.");
             persistInstance = list.iterator().next();
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         return persistInstance;
     }
 	
 	@Override
-    public void update(T object) {
+    public void update(T object) throws DaoException{
 		String sql = getUpdateQuery();
         try (PreparedStatement statement = connection.prepareStatement(sql);) {
             prepareStatementForUpdate(statement, object);
             int count = statement.executeUpdate();
             if (count != 1)
-            	LOG.info("On update modify more then 1 record: " + count);
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+            	throw new DaoException("On update modify more then 1 record: " + count);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
     }
 
     @Override
-    public void delete(T object) {
+    public void delete(T object) throws DaoException {
         String sql = getDeleteQuery();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             try {
                 statement.setObject(1, object.getId());
-            } catch (Exception ex) {
-            	LOG.log(Level.SEVERE, null, ex);
+            } catch (Exception e) {
+            	throw new DaoException(e);
             }
             int count = statement.executeUpdate();
             if (count != 1)
-            	LOG.info("On delete modify more then 1 record: " + count);
+            	throw new DaoException("On delete modify more then 1 record: " + count);
             statement.close();
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
     }
 	
 	@Override
-	public T getById(Integer id) {
+	public T getById(Integer id) throws DaoException{
 		List<T> list = null;
         String sql = getSelectQuery();
         sql += " WHERE id = ?";
@@ -93,13 +87,13 @@ public abstract class AbstarctDao<T extends Identified<PK>, PK extends Integer> 
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             list = parseResultSet(rs);
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } 
+        } catch (Exception e){
+        	throw new DaoException(e);
+        }
         if (list == null || list.size() == 0)
-        	LOG.info("Record with PK = " + id + " not found.");
+        	throw new DaoException("Record with PK = " + id + " not found.");
         if (list.size() > 1)
-        	LOG.info("Received more than one record.");
+        	throw new DaoException("Received more than one record.");
         return list.iterator().next();
 	}
 	

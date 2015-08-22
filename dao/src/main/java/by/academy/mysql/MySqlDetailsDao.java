@@ -5,16 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.Details;
+import by.academy.exceptions.DaoException;
 
 public class MySqlDetailsDao extends AbstarctDao<Details, Integer> {
 	
-	final static Logger LOG = Logger.getLogger(MySqlDetailsDao.class.getName());
-
 	private class PersistDetails extends Details {
         public void setId(int id) {
             super.setId(id);
@@ -47,13 +44,13 @@ public class MySqlDetailsDao extends AbstarctDao<Details, Integer> {
 	    }
 
 	    @Override
-	    public Details create() {
+	    public Details create() throws DaoException {
 	    	Details d = new Details();
 	        return add(d);
 	    }
 
 	    @Override
-	    protected List<Details> parseResultSet(ResultSet rs) throws Exception {
+	    protected List<Details> parseResultSet(ResultSet rs) throws DaoException {
 	        LinkedList<Details> result = new LinkedList<Details>();
 	        try {
 	            while (rs.next()) {
@@ -67,14 +64,14 @@ public class MySqlDetailsDao extends AbstarctDao<Details, Integer> {
 	                details.setFuel(rs.getString("fuel"));
 	                result.add(details);
 	            }
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	        return result;
 	    }
 
 	    @Override
-	    protected void prepareStatementForInsert(PreparedStatement statement, Details object) throws Exception {
+	    protected void prepareStatementForInsert(PreparedStatement statement, Details object) throws DaoException {
 	        try {
 	            statement.setString(1, object.getCountry());
 	            statement.setString(2, object.getMark());
@@ -82,13 +79,13 @@ public class MySqlDetailsDao extends AbstarctDao<Details, Integer> {
 	            statement.setString(4, object.getGearbox());
 	            statement.setInt(5, object.getMileage());
 	            statement.setString(6, object.getFuel());
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	    }
 
 	    @Override
-	    protected void prepareStatementForUpdate(PreparedStatement statement, Details object) throws Exception {
+	    protected void prepareStatementForUpdate(PreparedStatement statement, Details object) throws DaoException {
 	        try {
 	        	statement.setString(1, object.getCountry());
 	            statement.setString(2, object.getMark());
@@ -97,8 +94,8 @@ public class MySqlDetailsDao extends AbstarctDao<Details, Integer> {
 	            statement.setInt(5, object.getMileage());
 	            statement.setString(6, object.getFuel());
 	            statement.setInt(7, object.getId());
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	    }
 }

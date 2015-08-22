@@ -3,12 +3,8 @@
  */
 package by.academy.entities;
 
-import by.academy.Identified;
+import by.academy.config.Identified;
 
-/**
- * @author Veronika
- *
- */
 public class Roles implements Identified<Integer>{
 	private Integer id_role = null;
     private String role;

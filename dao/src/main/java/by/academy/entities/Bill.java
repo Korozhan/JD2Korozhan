@@ -5,13 +5,9 @@ package by.academy.entities;
 
 import java.util.Date;
 
-import by.academy.Identified;
+import by.academy.config.Identified;
 
 
-/**
- * @author Veronika
- *
- */
 public class Bill implements Identified<Integer>{
 	
 	private Integer id_bill = null;

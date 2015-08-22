@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package by.academy.mysql;
 
 import java.sql.Connection;
@@ -8,15 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.CarType;
+import by.academy.exceptions.DaoException;
 
 public class MySqlCarTypeDao extends AbstarctDao<CarType, Integer> {
-
-	final static Logger LOG = Logger.getLogger(MySqlCarTypeDao.class.getName());
 
 	public MySqlCarTypeDao(Connection connection) {
 		super(connection);
@@ -29,7 +24,7 @@ public class MySqlCarTypeDao extends AbstarctDao<CarType, Integer> {
     }
 	
 	@Override
-	public CarType create(){
+	public CarType create() throws DaoException{
 		CarType ct = new CarType();
         return add(ct);
 	}
@@ -57,7 +52,7 @@ public class MySqlCarTypeDao extends AbstarctDao<CarType, Integer> {
 	}
 
 	@Override
-	protected List<CarType> parseResultSet(ResultSet rs) throws Exception {
+	protected List<CarType> parseResultSet(ResultSet rs) throws DaoException {
 		LinkedList<CarType> result = new LinkedList<CarType>();
         try {
             while (rs.next()) {
@@ -66,30 +61,30 @@ public class MySqlCarTypeDao extends AbstarctDao<CarType, Integer> {
                 carType.setType(rs.getString("type"));
                 result.add(carType);
             }
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         return result;
 	}
 
 	@Override
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			CarType object) throws Exception {
+			CarType object) throws DaoException {
 		try {
             statement.setString(1, object.getType());
             statement.setInt(2, object.getId());
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
 	}
 
 	@Override
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			CarType object) throws Exception {
+			CarType object) throws DaoException {
 		try {
             statement.setString(1, object.getType());
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }		
 	}
 }

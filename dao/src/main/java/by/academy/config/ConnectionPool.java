@@ -1,5 +1,5 @@
 
-package by.academy;
+package by.academy.config;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,10 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
-/**
- * @author Veronika
- *
- */
+import by.academy.exceptions.ConnectionPoolException;
+
 public enum ConnectionPool {
 	INSTANCE;
 	
@@ -35,12 +33,6 @@ public enum ConnectionPool {
 		connectionProps.put("url", ConfigurationManager.INSTANCE.getProperty(ConfigurationManager.DB_URL));
 	}
 	
-	/**
-	 * Method init() should be called once before using getConnection method.
-	 * 
-	 * @param connectionNum - number of connections in connection pool
-	 * @throws ConnectionPoolException
-	 */
 	public void init(int connectionNum) throws ConnectionPoolException {
 		this.connections = new LinkedBlockingQueue<>(connectionNum);
 		this.connectionsCreated = 0;
@@ -54,13 +46,7 @@ public enum ConnectionPool {
 		}
 	}
 	
-	/**
-	 * Checks available connections. If all connections are busy, wait until any
-	 * connection is released.
-	 * 
-	 * @return DBConnection - pooled connection to the database
-	 * @throws ConnectionPoolException
-	 */
+	
 	public Connection getConnection() throws ConnectionPoolException {
 		try {
 			if (connPoolCapacity > connectionsCreated) {
@@ -89,7 +75,7 @@ public enum ConnectionPool {
 		}
 	}
 	
-	void returnDbConnection(Connection connection) {
+	void returnConnection(Connection connection) {
 		try {
 			this.connections.put(connection);
 		} catch (InterruptedException e) {
@@ -97,11 +83,6 @@ public enum ConnectionPool {
 		}
 	}
 	
-	/**
-	 * Releases all resources acquired by the connection pool.
-	 * Method should be called once when finish using connection pool.
-	 * @throws ConnectionPoolException 
-	 */
 	public void releaseResources() throws ConnectionPoolException {
 		try {
 			for (Connection dbConnection : connections) {

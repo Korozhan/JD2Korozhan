@@ -1,4 +1,4 @@
-package by.academy;
+package by.academy.exceptions;
 
 import org.apache.log4j.Logger;
 
