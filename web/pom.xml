@@ -20,8 +20,34 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>by.academy</groupId>
+    	<artifactId>exceptions</artifactId>
+    	<version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>web</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <configuration>
+          <url>http://localhost:8080/manager/text</url>
+          <username>managerGui</username>
+          <password>abc123</password>
+          <path>/web</path>
+          <warFile>target/web.war</warFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>redeploy</goal>
+            </goals>
+            <phase>install</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>

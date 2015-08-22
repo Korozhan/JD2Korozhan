@@ -9,15 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.Bill;
+import by.academy.exceptions.DaoException;
 
 public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
-
-	final static Logger LOG = Logger.getLogger(MySqlBillDao.class.getName());
 
 	public MySqlBillDao(Connection connection) {
 		super(connection);
@@ -30,7 +27,7 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
     }
 	
 	@Override
-	public Bill create(){
+	public Bill create() throws DaoException{
 		Bill b = new Bill();
         return add(b);
 	}
@@ -58,7 +55,7 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 	}
 
 	@Override
-	protected List<Bill> parseResultSet(ResultSet rs) throws Exception {
+	protected List<Bill> parseResultSet(ResultSet rs) throws DaoException {
 		LinkedList<Bill> result = new LinkedList<Bill>();
         try {
             while (rs.next()) {
@@ -68,22 +65,22 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
                 bill.setDate(rs.getDate("date"));
                 result.add(bill);
             }
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         return result;
 	}
 
 	@Override
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Bill object) throws Exception {
+			Bill object) throws DaoException {
 		try {
             Date sqlDate = convert(object.getDate());
             statement.setInt(1, object.getPrice());
             statement.setDate(2, sqlDate);
             statement.setInt(3, object.getId());
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
 	}
 
@@ -96,13 +93,13 @@ public class MySqlBillDao extends AbstarctDao<Bill, Integer> {
 
 	@Override
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			Bill object) throws Exception {
+			Bill object) throws DaoException {
 		try {
             Date sqlDate = convert(object.getDate());
             statement.setInt(1, object.getPrice());
             statement.setDate(2, sqlDate);
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }		
 	}
 

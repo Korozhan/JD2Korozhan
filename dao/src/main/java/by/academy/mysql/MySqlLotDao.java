@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package by.academy.mysql;
 
 import java.sql.Connection;
@@ -8,15 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.Lot;
+import by.academy.exceptions.DaoException;
 
 public class MySqlLotDao extends AbstarctDao<Lot, Integer> {
-
-	final static Logger LOG = Logger.getLogger(MySqlLotDao.class.getName());
 
 	public MySqlLotDao(Connection connection) {
 		super(connection);
@@ -29,7 +24,7 @@ public class MySqlLotDao extends AbstarctDao<Lot, Integer> {
     }
 	
 	@Override
-	public Lot create(){
+	public Lot create() throws DaoException{
 		Lot l = new Lot();
         return add(l);
 	}
@@ -57,7 +52,7 @@ public class MySqlLotDao extends AbstarctDao<Lot, Integer> {
 	}
 
 	@Override
-	protected List<Lot> parseResultSet(ResultSet rs) throws Exception {
+	protected List<Lot> parseResultSet(ResultSet rs) throws DaoException {
 		LinkedList<Lot> result = new LinkedList<Lot>();
         try {
             while (rs.next()) {
@@ -68,28 +63,28 @@ public class MySqlLotDao extends AbstarctDao<Lot, Integer> {
                 lot.setBillId(rs.getInt("id_bill"));
                 result.add(lot);
             }
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         return result;
 	}
 
 	@Override
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Lot object) throws Exception {
+			Lot object) throws DaoException {
 		try {
             statement.setInt(1, object.getUserId());
             statement.setInt(2, object.getRoleId());
             statement.setInt(3, object.getCarId());
             statement.setInt(4, object.getBillId());
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
 	}
 
 	@Override
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			Lot object) throws Exception {
+			Lot object) throws DaoException {
 		try {
 			
 			int userId = (object.getUserId() == null) ? 0 : object.getUserId();
@@ -101,8 +96,8 @@ public class MySqlLotDao extends AbstarctDao<Lot, Integer> {
             statement.setInt(3, carId);
             statement.setInt(4, billId);
             
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }		
 	}
 	

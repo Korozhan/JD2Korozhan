@@ -8,15 +8,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.Car;
+import by.academy.exceptions.DaoException;
 
 public class MySqlCarDao extends AbstarctDao<Car, Integer> {
-
-	final static Logger LOG = Logger.getLogger(MySqlCarDao.class.getName());
 
 	public MySqlCarDao(Connection connection) {
 		super(connection);
@@ -29,7 +26,7 @@ public class MySqlCarDao extends AbstarctDao<Car, Integer> {
     }
 	
 	@Override
-	public Car create(){
+	public Car create() throws DaoException{
 		Car c = new Car();
         return add(c);
 	}
@@ -57,8 +54,8 @@ public class MySqlCarDao extends AbstarctDao<Car, Integer> {
 	}
 
 	@Override
-	protected List<Car> parseResultSet(ResultSet rs) throws Exception {
-		LinkedList<Car> result = new LinkedList<Car>();
+	protected List<Car> parseResultSet(ResultSet rs) throws DaoException {
+		List <Car> result = new LinkedList<Car>();
         try {
             while (rs.next()) {
                 PersistCar car = new PersistCar();
@@ -67,26 +64,26 @@ public class MySqlCarDao extends AbstarctDao<Car, Integer> {
                 car.setDetailsId(rs.getInt("id_details"));
                 result.add(car);
             }
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
         return result;
 	}
 
 	@Override
 	protected void prepareStatementForUpdate(PreparedStatement statement,
-			Car object) throws Exception {
+			Car object) throws DaoException {
 		try {
             statement.setInt(1, object.getTypeId());
             statement.setInt(2, object.getDetailsId());
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }
 	}
 
 	@Override
 	protected void prepareStatementForInsert(PreparedStatement statement,
-			Car object) throws Exception {
+			Car object) throws DaoException {
 		try {
 			
 			int typeId = (object.getTypeId() == null) ? 0 : object.getTypeId();
@@ -95,8 +92,8 @@ public class MySqlCarDao extends AbstarctDao<Car, Integer> {
             statement.setInt(1, typeId);
             statement.setInt(2, detailsId);
             
-        } catch (Exception ex) {
-        	LOG.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+        	throw new DaoException(e);
         }		
 	}
 	

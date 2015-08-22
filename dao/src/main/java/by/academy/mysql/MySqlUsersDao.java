@@ -8,16 +8,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import by.academy.AbstarctDao;
+import by.academy.config.AbstarctDao;
 import by.academy.entities.Users;
+import by.academy.exceptions.DaoException;
 
 public class MySqlUsersDao extends AbstarctDao<Users, Integer> {
 	
-	final static Logger LOG = Logger.getLogger(MySqlUsersDao.class.getName());
-
 	private class PersistUsers extends Users {
         public void setId(int id) {
             super.setId(id);
@@ -50,13 +47,13 @@ public class MySqlUsersDao extends AbstarctDao<Users, Integer> {
 	    }
 
 	    @Override
-	    public Users create() {
+	    public Users create() throws DaoException {
 	    	Users u = new Users();
 	        return add(u);
 	    }
 
 	    @Override
-	    protected List<Users> parseResultSet(ResultSet rs) throws Exception {
+	    protected List<Users> parseResultSet(ResultSet rs) throws DaoException {
 	        LinkedList<Users> result = new LinkedList<Users>();
 	        try {
 	            while (rs.next()) {
@@ -66,30 +63,30 @@ public class MySqlUsersDao extends AbstarctDao<Users, Integer> {
 	                users.setPassword(rs.getString("password"));
 	                result.add(users);
 	            }
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	        return result;
 	    }
 
 	    @Override
-	    protected void prepareStatementForInsert(PreparedStatement statement, Users object) throws Exception {
+	    protected void prepareStatementForInsert(PreparedStatement statement, Users object) throws DaoException {
 	        try {
 	            statement.setString(1, object.getLogin());
 	            statement.setString(2, object.getPassword());
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	    }
 
 	    @Override
-	    protected void prepareStatementForUpdate(PreparedStatement statement, Users object) throws Exception {
+	    protected void prepareStatementForUpdate(PreparedStatement statement, Users object) throws DaoException {
 	        try {
 	            statement.setString(1, object.getLogin());
 	            statement.setString(2, object.getPassword());
 	            statement.setInt(3, object.getId());
-	        } catch (Exception ex) {
-	        	LOG.log(Level.SEVERE, null, ex);
+	        } catch (Exception e) {
+	        	throw new DaoException(e);
 	        }
 	    }
 }

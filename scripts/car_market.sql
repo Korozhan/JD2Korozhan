@@ -1,6 +1,5 @@
 CREATE SCHEMA `car_market` DEFAULT CHARACTER SET utf8 ;
 
-
 CREATE TABLE `car_market`.`users` (
   `id_user` INT NULL AUTO_INCREMENT,
   `login` VARCHAR(20) NOT NULL,
